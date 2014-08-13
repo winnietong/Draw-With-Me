@@ -1,0 +1,24 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+
+        <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+        <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+
+        <title>
+            {% block title %}
+                The Default title
+            {% endblock title %}
+        </title>
+
+    </head>
+    <body>
+
+        {% block content %}
+        {% endblock content %}
+
+        <script src="{% static 'js/custom.js' %}"></script>
+
+    </body>
+</html>
