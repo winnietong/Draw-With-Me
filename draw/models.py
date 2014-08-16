@@ -5,6 +5,10 @@ from django.db import models
 class User(AbstractUser):
     about = models.TextField(null=True)
 
-class Image(models.Model):
-    image = models.ImageField(upload_to='profile_images', blank=True, null=True)
-    authors = models.ManyToManyField(User, blank=True, null=True, related_name='image')
+
+class Drawing(models.Model):
+    local_path = models.CharField(max_length=120)
+    title = models.CharField(max_length=120)
+    author = models.ManyToManyField(User, blank=True, null=True, related_name="author")
+
+
