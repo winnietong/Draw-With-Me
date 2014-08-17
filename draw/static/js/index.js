@@ -159,7 +159,8 @@ $.ajax({
     url: url,
     dataType: 'text',
     data: {
-        base64data : dataURL
+        base64data : dataURL,
+        title: title
     }
 });
 
