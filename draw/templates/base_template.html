@@ -7,9 +7,14 @@
 
         <title>
             {% block title %}
-                The Default title
+                Draw with Me
             {% endblock title %}
         </title>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+        {% block extraheader %}
+        {% endblock extraheader %}
 
     </head>
     <body>
@@ -20,6 +25,7 @@
         <script src="{% static 'js/jquery.min.js' %}"></script>
         <script src="{% static 'js/index.js' %}"></script>
         <script src="{% static 'js/custom.js' %}"></script>
+        <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
 
     </body>
 </html>
