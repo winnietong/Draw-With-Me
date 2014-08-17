@@ -33,6 +33,7 @@ AUTH_USER_MODEL = 'draw.User'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/profile/'
 
+TASTYPIE_DEFAULT_FORMATS = ['json']
 
 # Application definition
 
@@ -47,6 +48,7 @@ INSTALLED_APPS = (
     'draw',
     'crispy_forms',
     'debug_toolbar',
+    'tastypie'
 )
 
 MIDDLEWARE_CLASSES = (
