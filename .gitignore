@@ -58,3 +58,5 @@ venv
 staticfiles
 
 .idea
+
+tmp

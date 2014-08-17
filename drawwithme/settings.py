@@ -46,6 +46,7 @@ INSTALLED_APPS = (
     'south',
     'draw',
     'crispy_forms',
+    'debug_toolbar',
 )
 
 MIDDLEWARE_CLASSES = (

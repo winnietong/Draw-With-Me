@@ -19,11 +19,13 @@ urlpatterns = patterns('',
     # Link to view other profiles (not your own)
     url(r'^profile/(?P<profile_username>[-\w\ !.]+)$', 'draw.views.profile_username', name='profile_username'),
 
+    # Save image to local
+    url(r'^save_image/$', 'draw.views.save_image', name='save_image'),
+
     # LOGIN AND LOGOUT
     url(r'^register/$', 'draw.views.register', name='register'),
     url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
-
 
     # USER AUTHENTICATION #
     url(r'^password_reset/$', 'django.contrib.auth.views.password_reset', name='password_reset'),

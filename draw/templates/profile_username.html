@@ -7,5 +7,20 @@
 
 
 {% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col_md_12">
+            <h1>Welcome {{  user.first_name|default:"Friend" }} </h1>
+        </div>
+    </div>
+    <div class="row">
+        {% for image in images %}
+            <div class="col_sm_12 col_md_3">
+                <img src="{{ image.local_path }}" />
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
 
 {% endblock content %}
