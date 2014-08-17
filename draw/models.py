@@ -9,5 +9,5 @@ class Drawing(models.Model):
     local_path = models.CharField(max_length=120)
     title = models.CharField(max_length=120)
     author = models.ManyToManyField(User, blank=True, null=True, related_name="author")
-
+    follower = models.ManyToManyField(User, blank=True, null=True, related_name="follower")
 

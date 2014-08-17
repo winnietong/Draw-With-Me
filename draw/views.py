@@ -61,23 +61,20 @@ def register(request):
 
 
 @login_required
-def profile(request):
+def profile(request, profile_username):
+
+    profile_user = User.objects.get(username=profile_username)
+    images = Drawing.objects.filter(author__username=profile_username)
 
     if request.method == 'POST':
         form = UserForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect("/profile/")
+            return redirect('/'+ profile_username +'/')
     else:
         form = UserForm(instance=request.user)
-    return render(request, "profile.html", {'form': form})
 
-
-def profile_username(request, profile_username):
-    profile_user = User.objects.get(username=profile_username)
-    images = Drawing.objects.filter(author=profile_user)
-    data = {
-        'images': images,
-        'profile_user': profile_user
-    }
-    return render(request, "profile_username.html", {'profile_user': profile_user})
+    return render(request, "profile.html", {'form': form,
+                                            'profile_user': profile_user,
+                                            'images': images
+                                            })
