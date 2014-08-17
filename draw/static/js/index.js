@@ -1,26 +1,28 @@
 $(document).ready(function() {
 
+
 var width = 1;
+//BUILD BRUSH WIDTH SLIDER
 $(function() {
     $( "#slider" ).slider({
-      value: width,
-      min:1,
-      max:50,
-      orientation: "horizontal",
-      range: "min",
-      animate: true,
-      slide: function( event, ui ) {
-        width = $( "#slider" ).slider( "value" );
-		console.log("w"+width);
-      }
+        value: width,
+        min:1,
+        max:100,
+        orientation: "horizontal",
+        range: "min",
+        animate: true,
+        slide: function( event, ui ) {
+            width = $( "#slider" ).slider( "value" );
+//            console.log("w"+width);
+            $('#brushWidth').val(width);
+        }
     });
-  });
+});
 
-
-
+//SET BRUSH COLOR
 var strokeColor = "black";
 $('.colorbox').on('click', function() {
-	strokeColor = $(this).data("bcolor");
+    strokeColor = $(this).data("bcolor");
 });
 
 
@@ -37,8 +39,8 @@ function findPos(obj) {
 }
 
 function getWidthSlider() {
-	
-	width = $( "#slider" ).slider( "option", "value" );
+	width = $( "#slider" ).slider( "option", "value");
+
 	return width;
 }
 
@@ -46,11 +48,11 @@ var c=document.getElementById("DrawCanvas");
 var ctx=c.getContext("2d");
 ctx.lineWidth=3;
 
-    var xCur;
-    var yCur;
-	var xStart;
-	var yStart;
-	var startNewLine = true;
+var xCur;
+var yCur;
+var xStart;
+var yStart;
+var startNewLine = true;
     
 
 $("#DrawCanvas").on("mousemove", function(e) {
@@ -69,25 +71,21 @@ $("#DrawCanvas").on("mousemove", function(e) {
     ctx.strokeStyle=strokeColor;
 
     if (e.which == 1) {
-/*         console.log('x: ' + e.pageX + ' y: '+ e.pageY); */
         xEnd = x;
 		yEnd = y;
 		ctx.moveTo(xStart,yStart);
 		ctx.lineTo(xEnd,yEnd);
 		xStart = xEnd;
 		yStart = yEnd;
-    };
+    }
 	ctx.stroke();
 	ctx.save();
-
 });
 
 
 $('#undo').on('click', function() {
 	     ctx.restore();
 });
-
-
 
 $(c).on("mouseup", function(){
 	startNewLine = true;
@@ -97,82 +95,64 @@ $(c).on("mousedown", function(){
 	startNewLine = false;
 });
 
+
+
 $(document).on('click', '#saveImage', function(c) {
 /* var c = document.getElementById("sketch"); */
-var dataString = c.toDataURL();
-      document.getElementById('canvasImg').src = dataString;
-
-/* window.open(dataString); */
+    var dataString = c.toDataURL();
+    document.getElementById('canvasImg').src = dataString;
+    /* window.open(dataString); */
 });
 
 
-function to_image(){
+$("#bt_draw").on('click', function() {
     document.getElementById("theimage").src = c.toDataURL();
-}
-
-function download_image(){
-    //Canvas2Image.saveAsPNG(canvas);
-    var image = c.toDataURL("image/png").replace("image/png", "image/octet-stream"); // here is the most important part because if you dont replace you will get a DOM 18 exception.
-    window.location.href=image;
-    
-    
-    $data = base64_decode(image);
-
-//list($type, $data) = explode(';', $data);
-//list("", $data)      = explode(',', $data);
-$data = base64_decode($data);
-
-/* file_put_contents('image.png', $data); */
-
-var image = new Image();
-image.src = $data;
-document.body.appendChild(image);
+});
 
 
+function download_image(link){
+    // here is the most important part because if you dont replace you will get a DOM 18 exception.
+    var download_image = c.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    window.location.href=download_image;
+    window.location.download="draw_with_me.png";
+//    $data = base64_decode(download_image);
+//    $data = base64_decode($data);
+//
+//    /* file_put_contents('image.png', $data); */
+//
+//    var image = new Image();
+//    image.src = $data;
+//    document.body.appendChild(image);
 }
 
 
-
-
-
-function save_image_local(){
+//SAVE IMAGE TO SERVER
+$("#bt_saveLocal").on('click', function() {
 	var image = c.toDataURL("image/png").replace("image/png", "image/octet-stream");
-/* 	$.ajax() */
-	console.log("1  "+image);
-      // save canvas image as data url (png format by default)
-      var dataURL = c.toDataURL();
-	console.log("2  "+dataURL);
+    // save canvas image as data url (default is png)
+    var dataURL = c.toDataURL();
+    // set canvasImg image src to dataURL
+    // so it can be saved as an image
+    document.getElementById('canvasImg').src = dataURL;
 
-      // set canvasImg image src to dataURL
-      // so it can be saved as an image
-      document.getElementById('canvasImg').src = dataURL;
-
-	
-//	var url = 'upload.php';
-//data = $('#canvasImg').attr('src');
-//	console.log("3  "+data);
+    var title = "Draw With Me";
 
     url = 'save_image/';
 
-$.ajax({ 
-    type: "POST", 
-    url: url,
-    dataType: 'text',
-    data: {
-        base64data : dataURL,
-        title: title
-    }
+    $.ajax({
+        type: "POST",
+        url: url,
+        dataType: 'text',
+        data: {
+            base64data : dataURL,
+            title: title
+        }
+    });
+
 });
-
-	
-	
-}
-
-
-
-document.getElementById('bt_draw').onclick = to_image
 document.getElementById('bt_download').onclick = download_image
-document.getElementById('bt_saveLocal').onclick = save_image_local
+//document.getElementById('bt_saveLocal').onclick = save_image_local
+
 
 
 });

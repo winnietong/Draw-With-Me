@@ -13,9 +13,12 @@
 
 
 {% block content %}
-
+<div id="mainCanvas" class="container">
+    <div class="row">
     <canvas id="DrawCanvas" width="1000" height="600" >
     Your browser does not support the HTML5 canvas tag.</canvas><br>
+    </div>
+</div>
 
     <div class="colorbox" style="background-color:red;" data-bcolor="red"></div>
     <div class="colorbox" style="background-color:orange;" data-bcolor="orange"></div>
@@ -28,16 +31,21 @@
     <div class="colorbox" style="background-color:black;" data-bcolor="black"></div>
     <div class="colorbox" style="background-color:grey;" data-bcolor="grey"></div>
 
-    <div id="slider" style="width:260px; margin:15px;"></div>
-    <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+    <div id="toolkit" class="container">
 
-    <br><br>
+        <div id="slider" style="width:250px; margin:15px;"><br>
+            Brush Width: <input type="text" id="brushWidth" value="1" readonly style="border:0; color:#341f07; font-weight:bold;">
 
-    <button id="eraser" class="colorbox" style="background-color:white;width:100px;" data-bcolor="white">Eraser</button>
+        </div>
 
+        <br><br>
+
+        <button id="eraser" class="colorbox" style="background-color:white;width:100px;" data-bcolor="white">Eraser</button>
+
+    </div>
 
     <div id='canvasImg'></div>
-
+    <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
     <div><button id="bt_saveLocal">Save Local (This works)</button></div>
     <div><button id="bt_draw">Draw to Image (recreates lower</button></div>
     <div><button id="bt_download">Download Image</button></div>
