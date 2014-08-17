@@ -22,12 +22,6 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'draw.views.home', name='home'),
 
-    # Link to view your own profile
-    url(r'^profile/$', 'draw.views.profile', name='profile'),
-
-    # Link to view other profiles (not your own)
-    url(r'^profile/(?P<profile_username>[-\w\ !.]+)$', 'draw.views.profile_username', name='profile_username'),
-
     # Save image to local
     url(r'^save_image/$', 'draw.views.save_image', name='save_image'),
 
@@ -46,6 +40,10 @@ urlpatterns = patterns('',
         'django.contrib.auth.views.password_reset_confirm',
         name='password_reset_confirm'),
     url(r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete', name='password_reset_complete'),
+
+    # Profile page ... domain/username
+    url(r'^(?P<profile_username>[-\w\ !.]+)/$', 'draw.views.profile', name='profile'),
+
 )
 
 

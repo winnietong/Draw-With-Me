@@ -7,12 +7,15 @@
 
 
 {% block content %}
-
-    <h1>Edit your User Form</h1>
-    <form enctype="multipart/form-data" method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <input type="submit" value="Submit">
+<div class="col-lg-5 well bs-component">
+    <form enctype="multipart/form-data" method="post" class="form-horizontal">
+        <fieldset>
+            <legend>Edit your Profile</legend>
+            {% csrf_token %}
+            {{ form|crispy }}
+            <input type="submit" value="Submit">
+        </fieldset>
     </form>
+</div>
 
 {% endblock content %}

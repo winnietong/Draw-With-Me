@@ -4,22 +4,59 @@
     <head lang="en">
 
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
 
         <title>
             {% block title %}
                 Draw with Me
             {% endblock title %}
         </title>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+        <div class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'home' %}">Draw With Me</a>
+                </div>
+                <div class="navbar-collapse collapse navbar-responsive-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+
+                        {% if user.is_authenticated %}
+                        <li><a href="#">Trending</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Login <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ root_url }}/{{ user.username }}">My Profile</a></li>
+                                <li><a href="{% url 'password_reset' %}">Reset Password</a></li>
+                                <li class="divider"></li>
+                                <li><a href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                            <li><a href="{% url 'register' %}">Register</a></li>
+                            <li><a href="{% url 'login' %}">Login</a></li>
+                        {% endif %}
+
+                    </ul>
+                </div>
+            </div>
+        </div>
 
         {% block extraheader %}
         {% endblock extraheader %}
 
     </head>
+
     <body>
 
-        {% block content %}
-        {% endblock content %}
+        <div class="container">
+            {% block content %}
+            {% endblock content %}
+        </div>
 
         <script src="{% static 'js/jquery.min.js' %}"></script>
         <script src="{% static 'js/index.js' %}"></script>
