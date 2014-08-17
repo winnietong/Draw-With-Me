@@ -40,7 +40,6 @@ function findPos(obj) {
 
 function getWidthSlider() {
 	width = $( "#slider" ).slider( "option", "value");
-
 	return width;
 }
 
@@ -97,12 +96,12 @@ $(c).on("mousedown", function(){
 
 
 
-$(document).on('click', '#saveImage', function(c) {
-/* var c = document.getElementById("sketch"); */
-    var dataString = c.toDataURL();
-    document.getElementById('canvasImg').src = dataString;
-    /* window.open(dataString); */
-});
+//$(document).on('click', '#saveImage', function(c) {
+///* var c = document.getElementById("sketch"); */
+//    var dataString = c.toDataURL();
+//    document.getElementById('canvasImg').src = dataString;
+//    /* window.open(dataString); */
+//});
 
 
 $("#bt_draw").on('click', function() {
@@ -110,20 +109,37 @@ $("#bt_draw").on('click', function() {
 });
 
 
-function download_image(link){
-    // here is the most important part because if you dont replace you will get a DOM 18 exception.
-    var download_image = c.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    window.location.href=download_image;
-    window.location.download="draw_with_me.png";
-//    $data = base64_decode(download_image);
-//    $data = base64_decode($data);
+//$("#bt_download").on('click', function() {
+//    // here is the most important part because if you dont replace you will get a DOM 18 exception.
+////    var download_image = c.toDataURL("image/png").replace("image/png", "image/octet-stream");
+////    window.location.href=download_image;
+////    window.location.download="draw_with_me.png";
+////    $data = base64_decode(download_image);
+////    $data = base64_decode($data);
+////
+////    /* file_put_contents('image.png', $data); */
+////
+////    var image = new Image();
+////    image.src = $data;
+////    document.body.appendChild(image);
+//    var canvas = $('#DrawCanvas');
+//    var image = canvas.toDataURL("image/png");
+//    $('#bt_download').attr({
+//        'download': 'draw_with_me.png',  /// set filename
+//        'href'    : image              /// set data-uri
+//    });
 //
-//    /* file_put_contents('image.png', $data); */
-//
-//    var image = new Image();
-//    image.src = $data;
-//    document.body.appendChild(image);
+//});
+
+function downloadCanvas(link, canvasId, filename) {
+    link.href = document.getElementById(canvasId).toDataURL();
+    link.download = filename;
 }
+
+document.getElementById('bt_download').addEventListener('click', function() {
+    downloadCanvas(this, 'DrawCanvas', 'draw_with_me.png');
+}, false);
+
 
 
 //SAVE IMAGE TO SERVER
@@ -150,7 +166,7 @@ $("#bt_saveLocal").on('click', function() {
     });
 
 });
-document.getElementById('bt_download').onclick = download_image
+//document.getElementById('bt_download').onclick = download_image
 //document.getElementById('bt_saveLocal').onclick = save_image_local
 
 
