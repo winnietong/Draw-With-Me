@@ -108,29 +108,7 @@ $("#bt_draw").on('click', function() {
     document.getElementById("theimage").src = c.toDataURL();
 });
 
-
-//$("#bt_download").on('click', function() {
-//    // here is the most important part because if you dont replace you will get a DOM 18 exception.
-////    var download_image = c.toDataURL("image/png").replace("image/png", "image/octet-stream");
-////    window.location.href=download_image;
-////    window.location.download="draw_with_me.png";
-////    $data = base64_decode(download_image);
-////    $data = base64_decode($data);
-////
-////    /* file_put_contents('image.png', $data); */
-////
-////    var image = new Image();
-////    image.src = $data;
-////    document.body.appendChild(image);
-//    var canvas = $('#DrawCanvas');
-//    var image = canvas.toDataURL("image/png");
-//    $('#bt_download').attr({
-//        'download': 'draw_with_me.png',  /// set filename
-//        'href'    : image              /// set data-uri
-//    });
-//
-//});
-
+//DOWNLOAD IMAGE TO COMPUTER
 function downloadCanvas(link, canvasId, filename) {
     link.href = document.getElementById(canvasId).toDataURL();
     link.download = filename;
@@ -139,7 +117,6 @@ function downloadCanvas(link, canvasId, filename) {
 document.getElementById('bt_download').addEventListener('click', function() {
     downloadCanvas(this, 'DrawCanvas', 'draw_with_me.png');
 }, false);
-
 
 
 //SAVE IMAGE TO SERVER
@@ -152,9 +129,9 @@ $("#bt_saveLocal").on('click', function() {
     document.getElementById('canvasImg').src = dataURL;
 
     var title = "Draw With Me";
-
+    title = $("#imgTitle").val();
     url = 'save_image/';
-
+    console.log(title);
     $.ajax({
         type: "POST",
         url: url,
@@ -166,8 +143,11 @@ $("#bt_saveLocal").on('click', function() {
     });
 
 });
-//document.getElementById('bt_download').onclick = download_image
-//document.getElementById('bt_saveLocal').onclick = save_image_local
+
+
+$('#clearCanvas').on('click', function() {
+    ctx.clearRect(0, 0, c.width, c.height);
+});
 
 
 
