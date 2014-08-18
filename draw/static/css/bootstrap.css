@@ -271,6 +271,7 @@ th {
   font-weight: normal;
   line-height: 1;
   -webkit-font-smoothing: antialiased;
+  align-content: right;
   -moz-osx-font-smoothing: grayscale;
 }
 .glyphicon-asterisk:before {
@@ -922,6 +923,7 @@ figure {
 }
 img {
   vertical-align: middle;
+  width: 50%;
 }
 .img-responsive,
 .thumbnail > img,
@@ -930,8 +932,8 @@ img {
 .carousel-inner > .item > a > img {
   display: block;
   width: 100% \9;
-  max-width: 100%;
-  height: auto;
+  width: 100%;
+  /* height: auto; */
 }
 .img-rounded {
   border-radius: 6px;
@@ -5454,7 +5456,7 @@ button.close {
 }
 @media (min-width: 768px) {
   .modal-dialog {
-    width: 600px;
+    width: 800px;
     margin: 30px auto;
   }
   .modal-content {

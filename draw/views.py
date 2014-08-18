@@ -1,5 +1,5 @@
-import random
-import string
+import random, string
+import re
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -31,8 +31,8 @@ def save_image(request):
         base64_data = image_data.replace("data:image/png;base64,", "")
 
         new_file_name = "{}.png".format(random_alphanum_string())
-        upload_path_file_name = "media/saved_drawings/{}".format(new_file_name)
-
+        upload_path_file_name = "draw/static/img/{}".format(new_file_name)
+        local_path_file_name = "img/{}".format(new_file_name)
 
         # print base64_data
         fh = open(upload_path_file_name, "wb")
@@ -65,7 +65,9 @@ def register(request):
 def profile(request, profile_username):
 
     profile_user = User.objects.get(username=profile_username)
-    images = Drawing.objects.filter(author__username=profile_username)
+    drawings = Drawing.objects.filter(author__username=profile_username)
+    favorites = Drawing.objects.filter(follower__username=profile_username)
+    url = re.sub('/','',request.path)
 
     if request.method == 'POST':
         form = UserForm(request.POST, instance=request.user)
@@ -77,5 +79,7 @@ def profile(request, profile_username):
 
     return render(request, "profile.html", {'form': form,
                                             'profile_user': profile_user,
-                                            'images': images
+                                            'drawings': drawings,
+                                            'favorites': favorites,
+                                            'url': url
                                             })
