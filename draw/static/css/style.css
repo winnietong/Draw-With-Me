@@ -1,6 +1,9 @@
 body {
 text-align: center;
 }
+
+/* HOME PAGE */
+
 .colorbox {
 	display: inline-block;
 	height:40px;
@@ -13,4 +16,34 @@ text-align: center;
 	border: 2px solid #d3d3d3;
 	height:600px;
 	width: 1000px;
+}
+
+
+/* PROFILE PAGE */
+
+.drawing-container{
+    display: inline-block;
+    width: 360px;
+    border: 1px solid #e7e7e7;
+    border-radius: 5px;
+    padding: 10px 10px;
+    margin: 8px;
+}
+
+.drawing-container:hover{
+    border: 1px solid rgba(84, 87, 105, 0.10);
+    box-shadow: 0px 0px 10px #888;
+}
+.drawing{
+    width: 100%;
+}
+
+
+/* FOOTER */
+footer{
+    background-color: rgba(84, 87, 105, 0.07);
+    padding: 30px 0;
+    margin-top: 20px;
+    color: #979797;
+    border-top: 1px #979797;
 }

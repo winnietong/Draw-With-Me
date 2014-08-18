@@ -43,7 +43,9 @@ urlpatterns = patterns('',
 
     # Profile page ... domain/username
     url(r'^(?P<profile_username>[-\w\ !.]+)/$', 'draw.views.profile', name='profile'),
-
+    url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {
+            'document_root': settings.MEDIA_ROOT,
+        }),
 )
 
 
