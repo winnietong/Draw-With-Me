@@ -1,11 +1,12 @@
 import random, string
-import re
+import re, json
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 from forms import EmailUserCreationForm, UserForm
 from models import *
+from django.db.models import Count
 
 
 def home(request):
@@ -83,3 +84,39 @@ def profile(request, profile_username):
                                             'favorites': favorites,
                                             'url': url
                                             })
+
+
+@csrf_exempt
+def add_favorite(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        image = Drawing.objects.get(pk = data['drawingId'])
+        image.follower.add(request.user)
+        return render(request, 'profile.html')
+
+
+# User is no longer a 'follower' of image
+@csrf_exempt
+def unfavorite(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        image = Drawing.objects.get(pk = data['drawingId'])
+        image.follower.remove(request.user)
+        return render(request, 'profile.html')
+
+
+# User is no longer an 'author' of image
+@csrf_exempt
+def remove_author(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        image = Drawing.objects.get(pk = data['drawingId'])
+        image.author.remove(request.user)
+        image.follower.remove(request.user)
+        return render(request, 'profile.html')
+
+
+def trending(request):
+    drawings = Drawing.objects.all().annotate(num_count = Count('follower')).order_by('num_count')[:3]
+
+    return render(request, "trending.html", {'drawings': drawings})

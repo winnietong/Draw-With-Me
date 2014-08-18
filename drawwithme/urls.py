@@ -24,11 +24,18 @@ urlpatterns = patterns('',
 
     # Save image to local
     url(r'^save_image/$', 'draw.views.save_image', name='save_image'),
+    url(r'^trending/$', 'draw.views.trending', name='trending'),
 
     # LOGIN AND LOGOUT
     url(r'^register/$', 'draw.views.register', name='register'),
     url(r'^login/$', 'django.contrib.auth.views.login', name='login'),
     url(r'^logout/$', 'django.contrib.auth.views.logout_then_login', name='logout'),
+
+    # AJAX CALLS
+    url(r'^add_favorite/$', 'draw.views.add_favorite', name='add_favorite'),
+    url(r'^unfavorite/$', 'draw.views.unfavorite', name='unfavorite'),
+    url(r'^remove_author/$', 'draw.views.remove_author', name='remove_author'),
+
 
     # USER AUTHENTICATION #
     url(r'^password_reset/$', 'django.contrib.auth.views.password_reset', name='password_reset'),
