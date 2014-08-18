@@ -15,11 +15,13 @@ $(document).ready(function(){
 
         if ($(this).hasClass("myDrawings")){
            $('#unFavoriteImage').hide();
+           $('#addFavorite').hide();
         }
-        if ($(this).hasClass("favorites")){
-           $('#removeAuthor').hide();
+        else if ($(this).hasClass("favorites")){
+            $('#removeAuthor').hide();
+            $('#addFavorite').hide();
         }
-        else{
+        else {
            $('#unFavoriteImage').hide();
            $('#removeAuthor').hide();
         }
@@ -28,7 +30,7 @@ $(document).ready(function(){
         $('.modal-title').text(drawingTitle);
 
         // Button actions
-        //        $('#editImage').attr('href', 'someeditlink');
+        $('#editImage').attr('href', '../canvas/' + drawingId);
         $('#downloadImage').attr('href', imageURL);
         $('#unFavoriteImage').on('click', function(){
             unfavorite(drawingId);
