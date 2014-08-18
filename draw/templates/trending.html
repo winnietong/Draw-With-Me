@@ -1,0 +1,24 @@
+{% extends 'base_template.html' %}
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+{% block title %}
+    Trending
+{% endblock title %}
+
+
+{% block content %}
+
+    <h1>Trending Images</h1>
+
+    {% for drawing in drawings %}
+        <div class="drawing-container drawings" data-img-id={{ drawing.id }} data-img-url="/static/{{ drawing.local_path }}" data-toggle="modal" data-target="#imageModal">
+            <img class="drawing" src="{% static drawing.local_path %}" alt="">
+            <h3 class="drawingTitle">{{ drawing.title }}</h3>
+        </div>
+    {% endfor %}
+
+    <!-- Image Modal -->
+    {% include 'includes/image_modal.html' %}
+
+{% endblock content %}
