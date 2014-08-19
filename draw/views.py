@@ -42,6 +42,7 @@ def save_image(request):
         d1 = Drawing.objects.create(local_path=local_path_file_name, title=title)
         d1.save()
         d1.author.add(request.user)
+        d1.follower.add(request.user)
         fh.close()
 
         return HttpResponse("everything is ok")
