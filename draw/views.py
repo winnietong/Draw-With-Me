@@ -120,3 +120,8 @@ def trending(request):
     drawings = Drawing.objects.all().annotate(num_count = Count('follower')).order_by('num_count')[:3]
 
     return render(request, "trending.html", {'drawings': drawings})
+
+
+def edit_canvas(request, canvas_id):
+    drawing = Drawing.objects.get(id = canvas_id);
+    return render(request, "edit_canvas.html", {'drawing': drawing})

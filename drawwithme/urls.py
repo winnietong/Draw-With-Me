@@ -21,6 +21,7 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'draw.views.home', name='home'),
+    url(r'^canvas/(?P<canvas_id>[-\w\ !.]+)/$', 'draw.views.edit_canvas', name='edit_canvas'),
 
     # Save image to local
     url(r'^save_image/$', 'draw.views.save_image', name='save_image'),
