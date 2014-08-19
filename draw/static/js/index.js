@@ -130,7 +130,9 @@ $("#bt_saveLocal").on('click', function() {
 
     var title = "Draw With Me";
     title = $("#imgTitle").val();
-    url = 'save_image/';
+
+    // Added origin path because I'm using from another page
+    url = window.location.origin + '/save_image/';
     console.log(title);
     $.ajax({
         type: "POST",

@@ -39,7 +39,7 @@ def save_image(request):
         fh = open(upload_path_file_name, "wb")
         fh.write(base64_data.decode('base64'))
         print fh
-        d1 = Drawing.objects.create(local_path=upload_path_file_name, title=title)
+        d1 = Drawing.objects.create(local_path=local_path_file_name, title=title)
         d1.save()
         d1.author.add(request.user)
         fh.close()
