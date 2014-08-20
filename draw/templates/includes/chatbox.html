@@ -1,0 +1,85 @@
+{% load staticfiles %}
+
+  <script src="https://cdn.firebase.com/js/client/1.0.15/firebase.js"></script>
+  <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js'></script>
+  <link rel="stylesheet" type="text/css" href={% static 'css/chat.css' %}>
+
+
+<!-- CHAT MARKUP -->
+<div class="example-chat l-demo-container">
+  <header>Chat With Me</header>
+
+  <div class='example-chat-toolbar'>
+    <label for="nameInput">Username:</label>
+    <input type='text' id='nameInput' placeholder='{{ user }}'>
+  </div>
+
+  <ul id='example-messages' class="example-chat-messages"></ul>
+
+  <footer>
+    <input type='text' id='messageInput'  placeholder='Type a message...'>
+  </footer>
+</div>
+
+<!-- CHAT JAVACRIPT -->
+<script>
+  // CREATE A REFERENCE TO FIREBASE
+  var messagesRef = new Firebase('https://rocketutest.firebaseio.com/');
+
+  // REGISTER DOM ELEMENTS
+  var messageField = $('#messageInput');
+  var messageList = $('#example-messages');
+
+
+  // LISTEN FOR KEYPRESS EVENT
+  messageField.keypress(function (e) {
+    if (e.keyCode == 13) {
+        $('.userTyping').html("");
+        //FIELD VALUES
+        var username = $('#nameInput').val() || $('#nameInput').attr('placeholder');
+        var message = messageField.val();
+        var d = new Date();
+        var hours = d.getHours();
+        var minutes = d.getMinutes();
+        var seconds = d.getSeconds();
+        var timestring = String("(" + hours + ":" + minutes + ":" + seconds + ")");
+
+        //SAVE DATA TO FIREBASE AND EMPTY FIELD
+        messagesRef.push({name:username,
+                        text:message,
+                        time: timestring});
+        messageField.val('');
+    }
+    else{
+        $('.userTyping').html("");
+        console.log("user is typing");
+        var userName = $('#nameInput').val() || $('#nameInput').attr('placeholder');
+        $("#example-messages").append("<i class='userTyping'><b>" + userName + " </b>is typing... </i>");
+    }
+  });
+
+  // Add a callback that is triggered for each chat message.
+  messagesRef.limit(10).on('child_added', function (snapshot) {
+
+    console.log(snapshot);
+    //GET DATA
+    var data = snapshot.val();
+    var username = data.name || "anonymous";
+    var message = data.text;
+    var time = data.time;
+
+    //CREATE ELEMENTS MESSAGE & SANITIZE TEXT
+    var messageElement = $("<li>");
+    var nameElement = $("<strong class='example-chat-username pull-left'> </strong>");
+    nameElement.html(username);
+    messageElement.html("<span class='pull-right example-chat-time' style='color:#bcbcbc; font-size: 12px; display: inline-block;'> " + time + "</span>" +
+    "<p class='pull-left message-box' style='width: 200px;display:block;' >" + message + "</p>").prepend(nameElement);
+{#    messageElement.html("<p>" + message + "</p>").prepend(nameElement);#}
+
+    //ADD MESSAGE
+    messageList.append(messageElement);
+
+    //SCROLL TO BOTTOM OF MESSAGE LIST
+    messageList[0].scrollTop = messageList[0].scrollHeight;
+  });
+</script>
