@@ -1,36 +1,113 @@
 $(document).ready(function() {
+    //Set up some globals
+    var pixSize = 10, lastPoint = null, mouseDown = 0;
 
+    //width is now pixSize
+
+    //Create a reference to the pixel data for our drawing.
+    var pixelDataRef = new Firebase('https://draw-with-me.firebaseio.com/');
+
+    // SET UP CANVAS
+    var myCanvas = document.getElementById('DrawCanvas');
+    var myContext = myCanvas.getContext ? myCanvas.getContext('2d') : null;
+    if (myContext == null) {
+      alert("You must use a browser that supports HTML5 Canvas to run this demo.");
+      return;
+    }
+
+    //SET BRUSH COLOR
+    var currentColor = "black";
+    $('.colorbox').on('click', function() {
+        currentColor = $(this).data("bcolor");
+    });
+
+    //TRACK MOUSE UP DOWN
+    myCanvas.onmousedown = function () {mouseDown = 1;};
+
+    myCanvas.onmouseout = myCanvas.onmouseup = function () {
+      mouseDown = 0; lastPoint = null;
+      pixelDataRef.child('priorityCounter').set(priorityCounter);
+    };
+
+    pixelDataRef.child('priorityCounter').once('value', function(snapshot) {
+        if (snapshot.val() === null) {
+                priorityCounter = 1;
+                pixelDataRef.child('priorityCounter').set(priorityCounter);
+        } else {
+                priorityCounter = snapshot.val();
+        }
+    });
+
+    //Draw a line from the mouse's last position to its current position
+    var drawLineOnMouseMove = function(e) {
+      if (!mouseDown) return;
+
+      e.preventDefault();
+      // Bresenham's line algorithm. We use this to ensure smooth lines are drawn
+      var offset = $('canvas').offset();
+      var x1 = Math.floor((e.pageX - offset.left)),
+        y1 = Math.floor((e.pageY - offset.top));
+      var x0 = (lastPoint == null) ? x1 : lastPoint[0];
+      var y0 = (lastPoint == null) ? y1 : lastPoint[1];
+      var dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
+      var sx = (x0 < x1) ? 1 : -1, sy = (y0 < y1) ? 1 : -1, err = dx - dy;
+      while (true) {
+        //write the pixel into Firebase, or if we are drawing white, remove the pixel
+        pixelDataRef.child(x0 + ":" + y0).setWithPriority([currentColor, getWidthSlider()], priorityCounter);
+        priorityCounter++;
+
+        if (x0 == x1 && y0 == y1) break;
+        var e2 = 2 * err;
+        if (e2 > -dy) {
+          err = err - dy;
+          x0 = x0 + sx;
+        }
+        if (e2 < dx) {
+          err = err + dx;
+          y0 = y0 + sy;
+        }
+      }
+      lastPoint = [x1, y1];
+    };
+    $(myCanvas).mousemove(drawLineOnMouseMove);
+    $(myCanvas).mousedown(drawLineOnMouseMove);
+
+
+
+    //Setup each color palette & add it to the screen
+//    var colors = ["fff","000","f00","0f0","00f","88f","f8d","f88","f05","f80","0f8","cf0","08f","408","ff8","8ff"];
+//    for (c in colors) {
+//      var item = $('<div/>').css("background-color", '#' + colors[c]).addClass("colorbox");
+//      item.click((function () {
+//        var col = colors[c];
+//        return function () {
+//          currentColor = col;
+//        };
+//      })());
+//      item.appendTo('#colorholder');
+//    }
 
     // HIDE 'SAVE AS' BUTTON ON HOME PAGE
     if(location.pathname == '/'){
         $("#bt_saveAs").hide();
     }
 
-    var width = 1;
     //BUILD BRUSH WIDTH SLIDER
     $(function() {
         $( "#slider" ).slider({
-            value: width,
+            value: pixSize,
             min:1,
             max:100,
             orientation: "horizontal",
             range: "min",
             animate: true,
             slide: function( event, ui ) {
-                width = $( "#slider" ).slider( "value" );
-    //            console.log("w"+width);
-                $('#brushWidth').val(width);
+                pixSize = $( "#slider" ).slider( "value" );
+                console.log("w"+pixSize);
+                $('#brushWidth').val(pixSize);
             }
         });
     });
-
-
-    //SET BRUSH COLOR
-    var strokeColor = "black";
-    $('.colorbox').on('click', function() {
-        strokeColor = $(this).data("bcolor");
-    });
-
 
     function findPos(obj) {
         var curleft = 0, curtop = 0;
@@ -45,13 +122,13 @@ $(document).ready(function() {
     }
 
     function getWidthSlider() {
-        width = $( "#slider" ).slider( "option", "value");
-        return width;
+        pixSize = $( "#slider" ).slider( "option", "value");
+        return pixSize;
     }
 
     var c=document.getElementById("DrawCanvas");
     var ctx=c.getContext("2d");
-    ctx.lineWidth=3;
+    ctx.lineWidth=pixSize;
 
     var xCur;
     var yCur;
@@ -89,47 +166,83 @@ $(document).ready(function() {
     // END OF DRAWING STARS FUNCTION //
 
 
-    $("#DrawCanvas").on("mousemove", function(e) {
-        ctx.lineWidth=getWidthSlider();
-        ctx.lineCap="round";
+    // Add callbacks that are fired any time the pixel data changes and adjusts the canvas appropriately.
+    // Note that child_added events will be fired for initial pixel data as well.
+    var drawPixel = function(snapshot) {
+        var coords = snapshot.name().split(":");
+        myContext.fillStyle = snapshot.val()[0];
+        pixSize = snapshot.val()[1];
 
-        var pos = findPos(this);
-        var x = e.pageX - pos.x;
-        var y = e.pageY - pos.y;
+        x00 = parseInt(coords[0]);
+        y00 = parseInt(coords[1]);
 
-        if (startNewLine) {
-            xStart = x;
-            yStart = y;
-        }
-        ctx.beginPath();
+        myContext.fillRect(x00, y00, pixSize, pixSize);
 
-        ctx.strokeStyle=strokeColor;
+    };
 
-        if (e.which == 1) {
-            xEnd = x;
-            yEnd = y;
-
-            ctx.moveTo(xStart,yStart);
-            ctx.lineTo(xEnd,yEnd);
-
-            if (strokeColor == 'stars') {
-                ctx.lineWidth = 1;
-                drawStar({x: xEnd,
-                    y: yEnd,
-                    angle: getRandomInt(0, 180),
-                    width: getRandomInt(1, 10),
-                    opacity: Math.random(),
-                    scale: getRandomInt(1, 20) / 10,
-                    color: ('rgb(' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ')')
-                });
+    var clearPixel = function(snapshot) {
+      var coords = snapshot.name().split(":");
+      if (isNaN(snapshot.val()[1])) {
+          pixSize = 1;
+      } else {
+          pixSize = snapshot.val()[1];
+      }
+      if (pixSize > 1) {
+        for (var i = 0; i < pixSize; i++) {
+            for (var j = 0; j < pixSize; j++) {
+                x0 += i;
+                y0 += j;
+                myContext.fillRect(parseInt(coords[0]), parseInt(coords[1]), 1, 1);
             }
-
-            xStart = xEnd;
-            yStart = yEnd;
         }
-        ctx.stroke();
-        ctx.save();
-    });
+    }
+      myContext.clearRect(parseInt(coords[0]), parseInt(coords[1]), pixSize, pixSize);
+    };
+    pixelDataRef.on('child_added', drawPixel);
+    pixelDataRef.on('child_changed', drawPixel);
+    pixelDataRef.on('child_removed', clearPixel);
+
+//    $("#DrawCanvas").on("mousemove", function(e) {
+//        ctx.lineWidth=getWidthSlider();
+//        ctx.lineCap="round";
+//
+//        var pos = findPos(this);
+//        var x = e.pageX - pos.x;
+//        var y = e.pageY - pos.y;
+//
+//        if (startNewLine) {
+//            xStart = x;
+//            yStart = y;
+//        }
+//        ctx.beginPath();
+//
+//        ctx.strokeStyle=strokeColor;
+//
+//        if (e.which == 1) {
+//            xEnd = x;
+//            yEnd = y;
+//
+//            ctx.moveTo(xStart,yStart);
+//            ctx.lineTo(xEnd,yEnd);
+//
+//            if (strokeColor == 'stars') {
+//                ctx.lineWidth = 1;
+//                drawStar({x: xEnd,
+//                    y: yEnd,
+//                    angle: getRandomInt(0, 180),
+//                    width: getRandomInt(1, 10),
+//                    opacity: Math.random(),
+//                    scale: getRandomInt(1, 20) / 10,
+//                    color: ('rgb(' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ')')
+//                });
+//            }
+//
+//            xStart = xEnd;
+//            yStart = yEnd;
+//        }
+//        ctx.stroke();
+//        ctx.save();
+//    });
 
 
     $('#undo').on('click', function() {
@@ -183,7 +296,7 @@ $(document).ready(function() {
 
         // Added origin path because I'm using from another page
         url = window.location.origin + '/save_image/';
-        console.log(title);
+//        console.log(title);
         $.ajax({
             type: "POST",
             url: url,
