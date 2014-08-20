@@ -1,5 +1,5 @@
 body {
-text-align: center;
+/*text-align: center;*/
 }
 
 /* HOME PAGE */
@@ -19,22 +19,22 @@ text-align: center;
 	position: relative;
 	margin: 0 auto;
 	border: 2px solid #d3d3d3;
-	height:600px;
-	width: 1000px;
+	/*height:600px;*/
+	/*width: 1000px;*/
     /*cursor:url(http://127.0.0.1:8000/media/brush.png) 15 60, auto;*/
     cursor:url(http://127.0.0.1:8000/media/brush2.png) 0 30, auto;
 }
 
 #slider{
     display: inline-block;
-    margin-left: 40px;
+    margin-left: 30px;
     margin-top: 10px;
     width:250px;
 }
 
-#toolkit{
-    max-width: 1000px;
-}
+/*#toolkit{*/
+    /*max-width: 1000px;*/
+/*}*/
 
 #imgTitle{
     width: 300px;
@@ -68,7 +68,7 @@ text-align: center;
 footer{
     background-color: rgba(84, 87, 105, 0.07);
     padding: 30px 0;
-    margin-top: 20px;
+    margin-top: 40px;
     color: #979797;
     border-top: 1px #979797;
 }

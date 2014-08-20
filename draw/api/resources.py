@@ -10,7 +10,7 @@ class UserResource(ModelResource):
 
 
 class DrawingResource(ModelResource):
-    user = ToManyField(UserResource, "user", full=True)
+    user = ToManyField(UserResource, "user", null=True, blank=True)
 
     class Meta:
         queryset = Drawing.objects.all()

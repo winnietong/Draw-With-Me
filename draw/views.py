@@ -118,7 +118,7 @@ def remove_author(request):
 
 
 def trending(request):
-    drawings = Drawing.objects.all().annotate(num_count = Count('follower')).order_by('num_count')[:3]
+    drawings = Drawing.objects.all().annotate(num_count = Count('follower')).order_by('num_count')[:9]
 
     return render(request, "trending.html", {'drawings': drawings})
 
