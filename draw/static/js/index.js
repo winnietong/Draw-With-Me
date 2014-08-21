@@ -1,10 +1,8 @@
 $(document).ready(function() {
     //Set up some globals
-    var pixSize = 10, lastPoint = null, mouseDown = 0;
+    var pixSize = 3, lastPoint = null, mouseDown = 0;
+    var spreadStars = 1;
 
-    //width is now pixSize
-
-    //Create a reference to the pixel data for our drawing.
     var pixelDataRef = new Firebase('https://draw-with-me.firebaseio.com/');
 
     // SET UP CANVAS
@@ -38,21 +36,31 @@ $(document).ready(function() {
         }
     });
 
+
+//    function draw(event){
+//       var coors = {
+//          x: event.targetTouches[0].pageX,
+//          y: event.targetTouches[0].pageY
+//       };
+//       drawer[event.type](coors);
+//    }
+
+
     //Draw a line from the mouse's last position to its current position
     var drawLineOnMouseMove = function(e) {
       if (!mouseDown) return;
 
       e.preventDefault();
-      // Bresenham's line algorithm. We use this to ensure smooth lines are drawn
+
       var offset = $('canvas').offset();
-      var x1 = Math.floor((e.pageX - offset.left)),
-        y1 = Math.floor((e.pageY - offset.top));
+      var x1 = Math.floor((e.pageX - offset.left))
+      var y1 = Math.floor((e.pageY - offset.top));
       var x0 = (lastPoint == null) ? x1 : lastPoint[0];
       var y0 = (lastPoint == null) ? y1 : lastPoint[1];
       var dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
       var sx = (x0 < x1) ? 1 : -1, sy = (y0 < y1) ? 1 : -1, err = dx - dy;
       while (true) {
-        //write the pixel into Firebase, or if we are drawing white, remove the pixel
+        //write the pixel into Firebase
         pixelDataRef.child(x0 + ":" + y0).setWithPriority([currentColor, getWidthSlider()], priorityCounter);
         priorityCounter++;
 
@@ -71,21 +79,10 @@ $(document).ready(function() {
     };
     $(myCanvas).mousemove(drawLineOnMouseMove);
     $(myCanvas).mousedown(drawLineOnMouseMove);
+    myCanvas.addEventListener('touchstart',drawLineOnMouseMove, false);
+    myCanvas.addEventListener('touchmove',drawLineOnMouseMove, false);
+    myCanvas.addEventListener('touchend',drawLineOnMouseMove, false);
 
-
-
-    //Setup each color palette & add it to the screen
-//    var colors = ["fff","000","f00","0f0","00f","88f","f8d","f88","f05","f80","0f8","cf0","08f","408","ff8","8ff"];
-//    for (c in colors) {
-//      var item = $('<div/>').css("background-color", '#' + colors[c]).addClass("colorbox");
-//      item.click((function () {
-//        var col = colors[c];
-//        return function () {
-//          currentColor = col;
-//        };
-//      })());
-//      item.appendTo('#colorholder');
-//    }
 
     // HIDE 'SAVE AS' BUTTON ON HOME PAGE
     if(location.pathname == '/'){
@@ -94,6 +91,7 @@ $(document).ready(function() {
 
     //BUILD BRUSH WIDTH SLIDER
     $(function() {
+        console.log('this'+pixSize);
         $( "#slider" ).slider({
             value: pixSize,
             min:1,
@@ -103,8 +101,8 @@ $(document).ready(function() {
             animate: true,
             slide: function( event, ui ) {
                 pixSize = $( "#slider" ).slider( "value" );
-                console.log("w"+pixSize);
                 $('#brushWidth').val(pixSize);
+//                console.log("w"+pixSize);
             }
         });
     });
@@ -163,21 +161,34 @@ $(document).ready(function() {
     function getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-    // END OF DRAWING STARS FUNCTION //
 
 
-    // Add callbacks that are fired any time the pixel data changes and adjusts the canvas appropriately.
-    // Note that child_added events will be fired for initial pixel data as well.
+    // callbacks fired any time the pixel data changes and updates the canvas
+    // child_added events fired on re+load
     var drawPixel = function(snapshot) {
         var coords = snapshot.name().split(":");
-        myContext.fillStyle = snapshot.val()[0];
+        strokeColor = snapshot.val()[0];
+        myContext.fillStyle = strokeColor;
         pixSize = snapshot.val()[1];
-
         x00 = parseInt(coords[0]);
         y00 = parseInt(coords[1]);
 
-        myContext.fillRect(x00, y00, pixSize, pixSize);
-
+        if (strokeColor == 'stars') {
+            ctx.lineWidth = 1;
+            if (spreadStars % (101-pixSize) === 0) {
+                drawStar({x: x00,
+                    y: y00,
+                    angle: getRandomInt(0, 180),
+                    width: getRandomInt(1, 10),
+                    opacity: Math.random(),
+                    scale: getRandomInt(1, 20) / 10,
+                    color: ('rgb(' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ')')
+                });
+            }
+            spreadStars++;
+        } else {
+            myContext.fillRect(x00 - pixSize/2, y00 - pixSize/2, pixSize, pixSize);
+        }
     };
 
     var clearPixel = function(snapshot) {
@@ -187,15 +198,6 @@ $(document).ready(function() {
       } else {
           pixSize = snapshot.val()[1];
       }
-      if (pixSize > 1) {
-        for (var i = 0; i < pixSize; i++) {
-            for (var j = 0; j < pixSize; j++) {
-                x0 += i;
-                y0 += j;
-                myContext.fillRect(parseInt(coords[0]), parseInt(coords[1]), 1, 1);
-            }
-        }
-    }
       myContext.clearRect(parseInt(coords[0]), parseInt(coords[1]), pixSize, pixSize);
     };
     pixelDataRef.on('child_added', drawPixel);
@@ -244,28 +246,12 @@ $(document).ready(function() {
 //        ctx.save();
 //    });
 
-
-    $('#undo').on('click', function() {
-        ctx.restore();
-    });
-
-    $(c).on("mouseup", function(){
-        startNewLine = true;
-    });
-
-    $(c).on("mousedown", function(){
-        startNewLine = false;
-    });
-
-
-
     //$(document).on('click', '#saveImage', function(c) {
     ///* var c = document.getElementById("sketch"); */
     //    var dataString = c.toDataURL();
     //    document.getElementById('canvasImg').src = dataString;
     //    /* window.open(dataString); */
     //});
-
 
     $("#bt_draw").on('click', function() {
         document.getElementById("theimage").src = c.toDataURL();
@@ -280,7 +266,6 @@ $(document).ready(function() {
     document.getElementById('bt_download').addEventListener('click', function() {
         downloadCanvas(this, 'DrawCanvas', 'draw_with_me.png');
     }, false);
-
 
     //SAVE IMAGE TO SERVER
     $("#bt_saveLocal").on('click', function() {
@@ -306,14 +291,11 @@ $(document).ready(function() {
                 title: title
             }
         });
-
     });
-
 
     $('#clearCanvas').on('click', function() {
         ctx.clearRect(0, 0, c.width, c.height);
     });
-
 
 
 });

@@ -7,11 +7,17 @@
 {% endblock title %}
 
 
+
 {% block content %}
 
     <h1>Edit your drawing</h1>
 
-    {% include 'includes/draw_canvas.html' %}
+    <div class="col-md-9">
+        {% include 'includes/draw_canvas.html' %}
+    </div>
+    <div class="col-md-3">
+        {% include 'includes/chatbox.html' %}
+    </div>
 
     <script>
         var context = document.getElementById('DrawCanvas').getContext("2d");
