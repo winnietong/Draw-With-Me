@@ -1,4 +1,87 @@
 $(document).ready(function() {
+    //Set up some globals
+    var pixSize = 3, lastPoint = null, mouseDown = 0;
+    var spreadStars = 1;
+
+    var pixelDataRef = new Firebase('https://draw-with-me.firebaseio.com/');
+
+    // SET UP CANVAS
+    var myCanvas = document.getElementById('DrawCanvas');
+    var myContext = myCanvas.getContext ? myCanvas.getContext('2d') : null;
+    if (myContext == null) {
+      alert("You must use a browser that supports HTML5 Canvas to run this demo.");
+      return;
+    }
+
+    //SET BRUSH COLOR
+    var currentColor = "black";
+    $('.colorbox').on('click', function() {
+        currentColor = $(this).data("bcolor");
+    });
+
+    //TRACK MOUSE UP DOWN
+    myCanvas.onmousedown = function () {mouseDown = 1;};
+
+    myCanvas.onmouseout = myCanvas.onmouseup = function () {
+      mouseDown = 0; lastPoint = null;
+      pixelDataRef.child('priorityCounter').set(priorityCounter);
+    };
+
+    pixelDataRef.child('priorityCounter').once('value', function(snapshot) {
+        if (snapshot.val() === null) {
+                priorityCounter = 1;
+                pixelDataRef.child('priorityCounter').set(priorityCounter);
+        } else {
+                priorityCounter = snapshot.val();
+        }
+    });
+
+
+//    function draw(event){
+//       var coors = {
+//          x: event.targetTouches[0].pageX,
+//          y: event.targetTouches[0].pageY
+//       };
+//       drawer[event.type](coors);
+//    }
+
+
+    //Draw a line from the mouse's last position to its current position
+    var drawLineOnMouseMove = function(e) {
+      if (!mouseDown) return;
+
+      e.preventDefault();
+
+      var offset = $('canvas').offset();
+      var x1 = Math.floor((e.pageX - offset.left))
+      var y1 = Math.floor((e.pageY - offset.top));
+      var x0 = (lastPoint == null) ? x1 : lastPoint[0];
+      var y0 = (lastPoint == null) ? y1 : lastPoint[1];
+      var dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0);
+      var sx = (x0 < x1) ? 1 : -1, sy = (y0 < y1) ? 1 : -1, err = dx - dy;
+      while (true) {
+        //write the pixel into Firebase
+        pixelDataRef.child(x0 + ":" + y0).setWithPriority([currentColor, getWidthSlider()], priorityCounter);
+        priorityCounter++;
+
+        if (x0 == x1 && y0 == y1) break;
+        var e2 = 2 * err;
+        if (e2 > -dy) {
+          err = err - dy;
+          x0 = x0 + sx;
+        }
+        if (e2 < dx) {
+          err = err + dx;
+          y0 = y0 + sy;
+        }
+      }
+      lastPoint = [x1, y1];
+    };
+    $(myCanvas).mousemove(drawLineOnMouseMove);
+    $(myCanvas).mousedown(drawLineOnMouseMove);
+    myCanvas.addEventListener('touchstart',drawLineOnMouseMove, false);
+    myCanvas.addEventListener('touchmove',drawLineOnMouseMove, false);
+    myCanvas.addEventListener('touchend',drawLineOnMouseMove, false);
 
 
     // HIDE 'SAVE AS' BUTTON ON HOME PAGE
@@ -6,31 +89,23 @@ $(document).ready(function() {
         $("#bt_saveAs").hide();
     }
 
-    var width = 1;
     //BUILD BRUSH WIDTH SLIDER
     $(function() {
+        console.log('this'+pixSize);
         $( "#slider" ).slider({
-            value: width,
+            value: pixSize,
             min:1,
             max:100,
             orientation: "horizontal",
             range: "min",
             animate: true,
             slide: function( event, ui ) {
-                width = $( "#slider" ).slider( "value" );
-    //            console.log("w"+width);
-                $('#brushWidth').val(width);
+                pixSize = $( "#slider" ).slider( "value" );
+                $('#brushWidth').val(pixSize);
+//                console.log("w"+pixSize);
             }
         });
     });
-
-
-    //SET BRUSH COLOR
-    var strokeColor = "black";
-    $('.colorbox').on('click', function() {
-        strokeColor = $(this).data("bcolor");
-    });
-
 
     function findPos(obj) {
         var curleft = 0, curtop = 0;
@@ -45,13 +120,13 @@ $(document).ready(function() {
     }
 
     function getWidthSlider() {
-        width = $( "#slider" ).slider( "option", "value");
-        return width;
+        pixSize = $( "#slider" ).slider( "option", "value");
+        return pixSize;
     }
 
     var c=document.getElementById("DrawCanvas");
     var ctx=c.getContext("2d");
-    ctx.lineWidth=3;
+    ctx.lineWidth=pixSize;
 
     var xCur;
     var yCur;
@@ -86,36 +161,23 @@ $(document).ready(function() {
     function getRandomInt(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
-    // END OF DRAWING STARS FUNCTION //
 
 
-    $("#DrawCanvas").on("mousemove", function(e) {
-        ctx.lineWidth=getWidthSlider();
-        ctx.lineCap="round";
+    // callbacks fired any time the pixel data changes and updates the canvas
+    // child_added events fired on re+load
+    var drawPixel = function(snapshot) {
+        var coords = snapshot.name().split(":");
+        strokeColor = snapshot.val()[0];
+        myContext.fillStyle = strokeColor;
+        pixSize = snapshot.val()[1];
+        x00 = parseInt(coords[0]);
+        y00 = parseInt(coords[1]);
 
-        var pos = findPos(this);
-        var x = e.pageX - pos.x;
-        var y = e.pageY - pos.y;
-
-        if (startNewLine) {
-            xStart = x;
-            yStart = y;
-        }
-        ctx.beginPath();
-
-        ctx.strokeStyle=strokeColor;
-
-        if (e.which == 1) {
-            xEnd = x;
-            yEnd = y;
-
-            ctx.moveTo(xStart,yStart);
-            ctx.lineTo(xEnd,yEnd);
-
-            if (strokeColor == 'stars') {
-                ctx.lineWidth = 1;
-                drawStar({x: xEnd,
-                    y: yEnd,
+        if (strokeColor == 'stars') {
+            ctx.lineWidth = 1;
+            if (spreadStars % (101-pixSize) === 0) {
+                drawStar({x: x00,
+                    y: y00,
                     angle: getRandomInt(0, 180),
                     width: getRandomInt(1, 10),
                     opacity: Math.random(),
@@ -123,28 +185,66 @@ $(document).ready(function() {
                     color: ('rgb(' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ')')
                 });
             }
-
-            xStart = xEnd;
-            yStart = yEnd;
+            spreadStars++;
+        } else {
+            myContext.fillRect(x00 - pixSize/2, y00 - pixSize/2, pixSize, pixSize);
         }
-        ctx.stroke();
-        ctx.save();
-    });
+    };
 
+    var clearPixel = function(snapshot) {
+      var coords = snapshot.name().split(":");
+      if (isNaN(snapshot.val()[1])) {
+          pixSize = 1;
+      } else {
+          pixSize = snapshot.val()[1];
+      }
+      myContext.clearRect(parseInt(coords[0]), parseInt(coords[1]), pixSize, pixSize);
+    };
+    pixelDataRef.on('child_added', drawPixel);
+    pixelDataRef.on('child_changed', drawPixel);
+    pixelDataRef.on('child_removed', clearPixel);
 
-    $('#undo').on('click', function() {
-        ctx.restore();
-    });
-
-    $(c).on("mouseup", function(){
-        startNewLine = true;
-    });
-
-    $(c).on("mousedown", function(){
-        startNewLine = false;
-    });
-
-
+//    $("#DrawCanvas").on("mousemove", function(e) {
+//        ctx.lineWidth=getWidthSlider();
+//        ctx.lineCap="round";
+//
+//        var pos = findPos(this);
+//        var x = e.pageX - pos.x;
+//        var y = e.pageY - pos.y;
+//
+//        if (startNewLine) {
+//            xStart = x;
+//            yStart = y;
+//        }
+//        ctx.beginPath();
+//
+//        ctx.strokeStyle=strokeColor;
+//
+//        if (e.which == 1) {
+//            xEnd = x;
+//            yEnd = y;
+//
+//            ctx.moveTo(xStart,yStart);
+//            ctx.lineTo(xEnd,yEnd);
+//
+//            if (strokeColor == 'stars') {
+//                ctx.lineWidth = 1;
+//                drawStar({x: xEnd,
+//                    y: yEnd,
+//                    angle: getRandomInt(0, 180),
+//                    width: getRandomInt(1, 10),
+//                    opacity: Math.random(),
+//                    scale: getRandomInt(1, 20) / 10,
+//                    color: ('rgb(' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ',' + getRandomInt(0, 255) + ')')
+//                });
+//            }
+//
+//            xStart = xEnd;
+//            yStart = yEnd;
+//        }
+//        ctx.stroke();
+//        ctx.save();
+//    });
 
     //$(document).on('click', '#saveImage', function(c) {
     ///* var c = document.getElementById("sketch"); */
@@ -152,7 +252,6 @@ $(document).ready(function() {
     //    document.getElementById('canvasImg').src = dataString;
     //    /* window.open(dataString); */
     //});
-
 
     $("#bt_draw").on('click', function() {
         document.getElementById("theimage").src = c.toDataURL();
@@ -168,7 +267,6 @@ $(document).ready(function() {
         downloadCanvas(this, 'DrawCanvas', 'draw_with_me.png');
     }, false);
 
-
     //SAVE IMAGE TO SERVER
     $("#bt_saveLocal").on('click', function() {
         var image = c.toDataURL("image/png").replace("image/png", "image/octet-stream");
@@ -183,7 +281,7 @@ $(document).ready(function() {
 
         // Added origin path because I'm using from another page
         url = window.location.origin + '/save_image/';
-        console.log(title);
+//        console.log(title);
         $.ajax({
             type: "POST",
             url: url,
@@ -193,14 +291,11 @@ $(document).ready(function() {
                 title: title
             }
         });
-
     });
-
 
     $('#clearCanvas').on('click', function() {
         ctx.clearRect(0, 0, c.width, c.height);
     });
-
 
 
 });
