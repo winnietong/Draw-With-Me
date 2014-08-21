@@ -22,7 +22,7 @@ body {
 	/*height:600px;*/
 	/*width: 1000px;*/
     /*cursor:url(http://127.0.0.1:8000/media/brush.png) 15 60, auto;*/
-    cursor:url(http://127.0.0.1:8000/media/brush2.png) 0 30, auto;
+    /*cursor:url(/media/brush2.png) 0 30, auto;*/
 }
 
 #slider{
