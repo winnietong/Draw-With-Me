@@ -20,11 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'r647c+f8gvk%$kldbgz6z&51wwpnp++@rf6)7a2409bd4=^u5)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+TEMPLATE_DEBUG = False
 
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 # CUSTOMIZATIONS
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
@@ -48,7 +47,6 @@ INSTALLED_APPS = (
     'south',
     'draw',
     'crispy_forms',
-    'debug_toolbar',
     'tastypie',
     "tastypie_swagger"
 )
@@ -100,3 +98,24 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+
+# Parse database configuration from $DATABASE_URL
+import dj_database_url
+DATABASES['default'] =  dj_database_url.config()
+
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
+
+# Static asset configuration
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = 'staticfiles'
+# STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
