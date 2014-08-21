@@ -72,3 +72,12 @@ footer{
     color: #979797;
     border-top: 1px #979797;
 }
+
+
+.center{
+    text-align: center;
+}
+
+.more-button{
+    margin-top: 20px;
+}

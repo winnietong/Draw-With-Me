@@ -5,6 +5,10 @@ from django.db import models
 class User(AbstractUser):
     about = models.TextField(null=True)
 
+    def __unicode__(self):
+        return u"{}".format(self.username)
+
+
 class Drawing(models.Model):
     local_path = models.CharField(max_length=120)
     title = models.CharField(max_length=120)

@@ -11,14 +11,16 @@
 
     <h1>Trending Images</h1>
 
-    {% for drawing in drawings %}
-        <div class="drawing-container drawings" data-img-id={{ drawing.id }} data-img-url="/static/{{ drawing.local_path }}" data-toggle="modal" data-target="#imageModal">
-            <img class="drawing" src="{% static drawing.local_path %}" alt="">
-            <h3 class="drawingTitle">{{ drawing.title }}</h3>
-        </div>
-    {% endfor %}
+    {# Ajax call to populate trending-container #}
+    <div class="trending-container container">
+    </div>
 
+    <div class="center more-button container">
+        <button class="btn btn-lg btn-success trendingBtnClick">More Images</button>
+    </div>
     <!-- Image Modal -->
     {% include 'includes/image_modal.html' %}
 
+
+    <script src="{% static 'js/trending.js' %}"></script>
 {% endblock content %}
