@@ -59,7 +59,7 @@
     <hr>
 
     {% if favorites %}
-        <h2>My Favorites</h2>
+        <h2>My Favorites!</h2>
         {% for drawing in favorites %}
             <div class="drawing-container favorites" data-img-id={{ drawing.id }} data-img-url="{{ drawing.local_path }}" data-toggle="modal" data-target="#imageModal">
                 <span class="glyphicon glyphicon-heart pull-right unfavorite" style="font-size: 24px;color: #ff3f3c;"></span>
