@@ -1,0 +1,32 @@
+{% extends 'base_template.html' %}
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+{% block title %}
+    Edit Canvas
+{% endblock title %}
+
+
+
+{% block content %}
+
+    <h1>Edit your drawing</h1>
+
+    <div class="col-md-9">
+        {% include 'includes/draw_canvas.html' %}
+    </div>
+    <div class="col-md-3">
+        {% include 'includes/chatbox.html' %}
+    </div>
+
+    <script>
+        var context = document.getElementById('DrawCanvas').getContext("2d");
+
+        var img = new Image();
+        img.onload = function () {
+               context.drawImage(img, 0, 0, 800, 600);
+        };
+        img.src = "{% static drawing.local_path %}";
+    </script>
+
+{% endblock content %}

@@ -33,6 +33,8 @@ AUTH_USER_MODEL = 'draw.User'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/profile/'
 
+TASTYPIE_DEFAULT_FORMATS = ['json']
+TASTYPIE_SWAGGER_API_MODULE = "drawwithme.urls.v1_api"
 
 # Application definition
 
@@ -47,6 +49,8 @@ INSTALLED_APPS = (
     'draw',
     'crispy_forms',
     'debug_toolbar',
+    'tastypie',
+    "tastypie_swagger"
 )
 
 MIDDLEWARE_CLASSES = (

@@ -1,0 +1,26 @@
+{% extends 'base_template.html' %}
+{% load crispy_forms_tags %}
+{% load staticfiles %}
+
+{% block title %}
+    Trending
+{% endblock title %}
+
+
+{% block content %}
+
+    <h1>Trending Images</h1>
+
+    {# Ajax call to populate trending-container #}
+    <div class="trending-container container">
+    </div>
+
+    <div class="center more-button container">
+        <button class="btn btn-lg btn-success trendingBtnClick">More Images</button>
+    </div>
+    <!-- Image Modal -->
+    {% include 'includes/image_modal.html' %}
+
+
+    <script src="{% static 'js/trending.js' %}"></script>
+{% endblock content %}

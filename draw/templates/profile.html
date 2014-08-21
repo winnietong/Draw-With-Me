@@ -1,18 +1,78 @@
 {% extends 'base_template.html' %}
 {% load crispy_forms_tags %}
+{% load staticfiles %}
 
 {% block title %}
-    Profile
+    {{ user.username }}'s profile
 {% endblock title %}
 
 
 {% block content %}
 
-    <h1>Edit your User Form</h1>
-    <form enctype="multipart/form-data" method="post">
-        {% csrf_token %}
-        {{ form|crispy }}
-        <input type="submit" value="Submit">
-    </form>
+
+    <!-- Modal box and button is viewable only by owner of profile -->
+    {% if user.username == url %}
+        <!-- Button trigger modal -->
+        <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal">
+            Edit Profile
+        </button>
+
+        <!-- Modal -->
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content ">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Edit your profile</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form enctype="multipart/form-data" method="post" class="form-horizontal">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Modal -->
+    {% endif %}
+
+    <br><br>
+
+    {% if drawings %}
+        <h2>My Drawings</h2>
+        {% for drawing in drawings %}
+            <div class="drawing-container myDrawings" data-img-id={{ drawing.id }} data-img-url="/static/{{ drawing.local_path }}" data-toggle="modal" data-target="#imageModal">
+                <img class="drawing" src="{% static drawing.local_path %}" alt="">
+                <h3 class="drawingTitle">{{ drawing.title }}</h3>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2>You haven't made a drawing yet!</h2>
+        <p>You can collaborate or make one of your own by following this <a href="{% url 'home' %}">link.</a></p>
+    {% endif %}
+
+    <hr>
+
+    {% if favorites %}
+        <h2>My Favorites</h2>
+        {% for drawing in favorites %}
+            <div class="drawing-container favorites" data-img-id={{ drawing.id }} data-img-url="/static/{{ drawing.local_path }}" data-toggle="modal" data-target="#imageModal">
+                <span class="glyphicon glyphicon-heart pull-right unfavorite" style="font-size: 24px;color: #ff3f3c;"></span>
+                <img class="drawing" src="{% static drawing.local_path %}" alt="">
+                <h3 class="drawingTitle">{{ drawing.title }}</h3>
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2>You don't have any favorites yet!</h2>
+        <span class="glyphicon glyphicon-heart-empty" style="font-size: 100px; color: red;"></span>
+    {% endif %}
+
+    <!-- Image Modal -->
+    {% include 'includes/image_modal.html' %}
 
 {% endblock content %}

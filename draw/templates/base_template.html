@@ -4,28 +4,72 @@
     <head lang="en">
 
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+        <script src="{% static 'js/jquery.min.js' %}"></script>
 
         <title>
             {% block title %}
                 Draw with Me
             {% endblock title %}
         </title>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-
         {% block extraheader %}
         {% endblock extraheader %}
 
     </head>
     <body>
+        <div class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="{% url 'home' %}">Draw With Me</a>
+                </div>
+                <div class="navbar-collapse collapse navbar-responsive-collapse">
+                    <ul class="nav navbar-nav navbar-right">
 
-        {% block content %}
-        {% endblock content %}
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'trending' %}">Trending</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.username }} <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="{{ root_url }}/{{ user.username }}">My Profile</a></li>
+                                <li><a href="{% url 'password_reset' %}">Reset Password</a></li>
+                                <li class="divider"></li>
+                                <li><a href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                        {% else %}
+                            <li><a href="{% url 'register' %}">Register</a></li>
+                            <li><a href="{% url 'login' %}">Login</a></li>
+                        {% endif %}
 
-        <script src="{% static 'js/jquery.min.js' %}"></script>
-        <script src="{% static 'js/index.js' %}"></script>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="container">
+            {% block content %}
+            {% endblock content %}
+        </div>
+
+
+
+        <footer>
+            <div class="container">
+                A Binnie Production. Copyright 2014.
+            </div>
+        </footer>
+
         <script src="{% static 'js/custom.js' %}"></script>
+        <script src="{% static 'js/index.js' %}"></script>
         <script src="http://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 
     </body>
 </html>
