@@ -18,6 +18,11 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^api/', include(v1_api.urls)),
+    url(r'api/doc/',
+        include('tastypie_swagger.urls', namespace='tastypie_swagger'),
+        kwargs={"tastypie_api_module": "v1_api",
+                "namespace": "tastypie_swagger"}
+    ),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'draw.views.home', name='home'),
