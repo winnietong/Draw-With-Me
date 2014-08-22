@@ -16,6 +16,7 @@ $(document).ready(function(){
                 console.log(data);
                 for (var i = 0; i < data.objects.length; i++) {
                     var object = data.objects[i];
+                    // If you're just using the field once it's usually not worth while to define each as a var separately
                     var followers = object.follower;
                     var authors = object.author;
                     var local_path = object.local_path;
