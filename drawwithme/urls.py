@@ -24,6 +24,7 @@ urlpatterns = patterns('',
                 "namespace": "tastypie_swagger"}
     ),
 
+    # Should split out your app specific urls into a urls.py in your app for organization
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'draw.views.home', name='home'),
     url(r'^canvas/(?P<canvas_id>[-\w\ !.]+)/$', 'draw.views.edit_canvas', name='edit_canvas'),
