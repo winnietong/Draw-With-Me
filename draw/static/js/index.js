@@ -1,3 +1,8 @@
+// Overall this looks pretty good, and you both split some of it up into functions to make it a bit more organized.
+// It's obviously pushing the limits of being organized though with vanilla javascript.
+// Using a framework like Angular would help clean up and organize this or if you wanted to still use javascript
+// you could make this a bit more organized by making this object oriented. 
+// We didn't cover OO javascript in class much, but there's plenty of documentation out there.
 $(document).ready(function() {
     //Set up some globals
     var pixSize = 3, lastPoint = null, mouseDown = 0;
@@ -53,7 +58,7 @@ $(document).ready(function() {
       e.preventDefault();
 
       var offset = $('canvas').offset();
-      var x1 = Math.floor((e.pageX - offset.left))
+      var x1 = Math.floor((e.pageX - offset.left));
       var y1 = Math.floor((e.pageY - offset.top));
       var x0 = (lastPoint == null) ? x1 : lastPoint[0];
       var y0 = (lastPoint == null) ? y1 : lastPoint[1];
