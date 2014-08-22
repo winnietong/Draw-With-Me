@@ -22,6 +22,9 @@ def random_alphanum_string():
 @csrf_exempt
 def save_image(request):
     print "Im here"
+    # Could you use a Django Form with a FileField to do this? Would simplify a lot of the 
+    # file parsing and saving logic
+    # It could also, possibly be a ModelForm for the Drawing model.
     if request.method == "POST":
         print "we-re here"
         # print request.method
@@ -67,6 +70,7 @@ def register(request):
 def profile(request, profile_username):
 
     profile_user = User.objects.get(username=profile_username)
+    # You just got the profile_user so the following filters can just be author=profile_user, follower=profile_user
     drawings = Drawing.objects.filter(author__username=profile_username)
     favorites = Drawing.objects.filter(follower__username=profile_username)
     url = re.sub('/','',request.path)
